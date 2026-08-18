@@ -19,8 +19,15 @@ jobs:
           pip install './packages/markitdown[all]' pyinstaller
           pyinstaller --onefile --name markitdown packages/markitdown/src/markitdown/__main__.py
 
+      - name: Comprimir ejecutable para asegurar descarga
+        run: |
+          mkdir build_output
+          cp dist/markitdown build_output/
+          cd build_output && zip -r markitdown-macos.zip markitdown
+
       - name: Subir el ejecutable terminado
         uses: actions/upload-artifact@v4
         with:
           name: markitdown-macos-binario
-          path: dist/markitdown
+          path: build_output/markitdown-macos.zip
+          retention-days: 1
