@@ -1,0 +1,68 @@
+name: Compilar MarkItDown macOS Apple Silicon
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Verificar arquitectura
+        run: |
+          uname -m
+          arch
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar MarkItDown PDF y Word
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "./packages/markitdown[pdf,docx]"
+          python -m pip install pyinstaller
+
+      - name: Verificar dependencias
+        run: |
+          python -c "import pdfminer; import pdfminer.high_level; import pdfplumber; print('PDF OK')"
+          python -c "import mammoth; import lxml; print('WORD OK')"
+
+      - name: Crear ejecutable ARM64
+        run: |
+          pyinstaller \
+            --clean \
+            --onefile \
+            --name markitdown \
+            --target-arch arm64 \
+            --collect-all markitdown \
+            --collect-all pdfminer \
+            --collect-all pdfplumber \
+            --collect-all mammoth \
+            --collect-all lxml \
+            --hidden-import=pdfminer \
+            --hidden-import=pdfminer.high_level \
+            --hidden-import=pdfplumber \
+            --hidden-import=mammoth \
+            --hidden-import=lxml \
+            --recursive-copy-metadata markitdown \
+            launcher.py
+
+      - name: Probar que ejecuta
+        run: |
+          ./dist/markitdown --help
+
+      - name: Comprobar ARM64
+        run: |
+          file ./dist/markitdown
+          ls -lh ./dist/markitdown
+
+      - name: Subir ejecutable
+        uses: actions/upload-artifact@v4
+        with:
+          name: markitdown-macos-arm64
+          path: dist/markitdown
