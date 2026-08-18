@@ -1,0 +1,26 @@
+name: Compilar MarkItDown para Mac
+on:
+  workflow_dispatch: # Nos permite pulsar un botón para iniciar la compilación
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Clonar el código de Microsoft
+        uses: actions/checkout@v4
+
+      - name: Configurar Python temporal en el servidor
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar y compilar con PyInstaller
+        run: |
+          pip install '.[all]' pyinstaller
+          pyinstaller --onefile --name markitdown packages/markitdown/src/markitdown/__main__.py
+
+      - name: Subir el ejecutable terminado
+        uses: actions/upload-artifact@v4
+        with:
+          name: markitdown-macos-binario
+          path: dist/markitdown
