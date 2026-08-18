@@ -1,6 +1,6 @@
 name: Compilar MarkItDown para Mac
 on:
-  workflow_dispatch: # Nos permite pulsar un botón para iniciar la compilación
+  workflow_dispatch:
 
 jobs:
   build-macos:
@@ -16,7 +16,7 @@ jobs:
 
       - name: Instalar y compilar con PyInstaller
         run: |
-          pip install '.[all]' pyinstaller
+          pip install './packages/markitdown[all]' pyinstaller
           pyinstaller --onefile --name markitdown packages/markitdown/src/markitdown/__main__.py
 
       - name: Subir el ejecutable terminado
