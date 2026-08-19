@@ -40,16 +40,19 @@ jobs:
             --name markitdown \
             --target-arch arm64 \
             --collect-all markitdown \
+            --collect-all magika \
             --collect-all pdfminer \
             --collect-all pdfplumber \
             --collect-all mammoth \
             --collect-all lxml \
+            --hidden-import=magika \
             --hidden-import=pdfminer \
             --hidden-import=pdfminer.high_level \
             --hidden-import=pdfplumber \
             --hidden-import=mammoth \
             --hidden-import=lxml \
             --recursive-copy-metadata markitdown \
+            --recursive-copy-metadata magika \
             launcher.py
 
       - name: Probar que ejecuta
